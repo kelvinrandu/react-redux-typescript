@@ -1,26 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import * as React from "react"
+import { useSelector, shallowEqual, useDispatch } from "react-redux"
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+
+import { Post } from "./components/Post"
+import { AddPost } from "./components/AddPost"
+import { addPost, removePost } from "./store/actionCreators"
+import { Dispatch } from "redux"
+
+const App: React.FC = () => {
+  const articles: readonly IPost[] = useSelector(
+    (state: PostState) => state.posts,
+    shallowEqual
   );
-}
+
+  const dispatch: Dispatch<any> = useDispatch();
+
+  const savePost = React.useCallback(
+    (post: IPost) => dispatch(addPost(post)),
+    [dispatch]
+  );
+  return (
+    <main>
+      <h1>My Articles</h1>
+      <AddPost savePost={savePost} />
+      {articles.map((post: IPost) => (
+        <Post
+          key={post.id}
+          post={post}
+          removePost={removePost}
+        />
+      ))}
+    </main>
+  );
+};
 
 export default App;
+
